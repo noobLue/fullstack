@@ -34,3 +34,10 @@ npm start
 ----
 
 ## Part2
+
+
+Exercises 2.1 - 2.5 are in [/part2/courseinfo/](./part2/courseinfo/)
+```bat
+cd ./part2/courseinfo/
+npm start
+```
