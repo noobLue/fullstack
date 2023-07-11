@@ -34,10 +34,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <ControlledInput input={{key: 'filter shown with', value: newFilter, callback: setNewFilter}}></ControlledInput>
-      <Form inputs={inputs} submit={submitFunc}></Form>
+      <ControlledInput input={{key: 'filter shown with', value: newFilter, callback: setNewFilter}} />
+      <Form inputs={inputs} submit={submitFunc} />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter}></Persons>
+      <Persons persons={persons} newFilter={newFilter} />
     </div>
   )
 }
