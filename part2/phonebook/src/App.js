@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Persons from './Persons'
 import ControlledInput from './ControlledInput'
 import Form from './Form'
 
+import axios from 'axios'
+
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: "040-111" }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
@@ -25,6 +25,17 @@ const App = () => {
     setNewNumber('');
     setNewName('');
   };
+
+  useEffect(() => {
+    console.log("effect");
+    axios
+      .get("http://localhost:3001/persons")
+      .then(res => {
+        console.log(res);
+        setPersons(persons.concat(res.data));
+      });
+      
+  }, [])
 
   const inputs = [
     { key:"name", value: newName, callback: setNewName }, 
