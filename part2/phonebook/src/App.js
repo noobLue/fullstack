@@ -3,7 +3,7 @@ import Persons from './Persons'
 import ControlledInput from './ControlledInput'
 import Form from './Form'
 
-import axios from 'axios'
+import phonebook from './services/phonebook'
 
 
 const App = () => {
@@ -12,43 +12,72 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
-  const submitFunc = (e) => {
+  const createPerson = (e) => {
     e.preventDefault();
 
-    if(persons.filter(p=>p.name === newName).length > 0)
+    const person = { name: newName, number: newNumber }
+    const oldPerson = persons.find(p => p.name === newName)
+    if(oldPerson)
     {
-      alert(`${newName} is already added to phonebook`)
-      return;
+      if(window.confirm(`${person.name} is already added to the phonebook, replace old number?`))
+      {
+        phonebook.update(oldPerson.id, person)
+          .then(res => {
+            setPersons(persons.map(p => p.name !== person.name ? p : res.data));
+            setNewNumber('');
+            setNewName('');
+          })
+          .catch((err)=>{
+            alert(`error: ${err}`)
+          })
+      }
     }
-    
-    setPersons(persons.concat({ name: newName, number: newNumber }));
-    setNewNumber('');
-    setNewName('');
+    else 
+    {
+      phonebook.create(person)
+        .then(res => {
+          setPersons(persons.concat(res.data));
+          setNewNumber('');
+          setNewName('');
+        })
+        .catch((err)=>{
+          alert(`error: ${err}`)
+        })
+    }
+  };
+
+  const deletePerson = (id) => {
+    if(window.confirm(`Delete ${persons.find(p => p.id === id).name}?`))
+    {
+      phonebook.deleteObject(id)
+        .then((res) => {
+          setPersons(persons.filter(p => p.id !== id))
+        }, [])
+        .catch((err)=>{
+          alert(`error: ${err}`)
+        })
+    }
   };
 
   useEffect(() => {
-    console.log("effect");
-    axios
-      .get("http://localhost:3001/persons")
+    phonebook.getAll()
       .then(res => {
         console.log(res);
-        setPersons(persons.concat(res.data));
+        setPersons(res.data);
       });
-      
   }, [])
 
   const inputs = [
     { key:"name", value: newName, callback: setNewName }, 
     { key:"number", value: newNumber, callback: setNewNumber }
   ]
-
   return (
     <div>
       <h2>Phonebook</h2>
       <ControlledInput input={{key: 'filter shown with', value: newFilter, callback: setNewFilter}} />
-      <Form inputs={inputs} submit={submitFunc} />
+      <Form inputs={inputs} submit={createPerson} />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter} />
+      <Persons persons={persons} deletePerson={deletePerson} newFilter={newFilter} />
     </div>
   )
 }
