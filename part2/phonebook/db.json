@@ -4,21 +4,6 @@
       "name": "Arto Hellas",
       "number": "040-123456",
       "id": 1
-    },
-    {
-      "name": "Ada Lovelacerino",
-      "number": "666-879123",
-      "id": 2
-    },
-    {
-      "name": "test",
-      "number": "12345",
-      "id": 3
-    },
-    {
-      "name": "test2",
-      "number": "1",
-      "id": 4
     }
   ]
 }

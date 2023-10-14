@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Persons from './Persons'
 import ControlledInput from './ControlledInput'
 import Form from './Form'
+import Notification from './Notification'
 
 import phonebook from './services/phonebook'
 
@@ -11,6 +12,15 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState([]);
+
+  const setMessage = (message, fail) => {
+    setErrorMessage([message, fail])
+          
+    setTimeout(() => {
+      setErrorMessage([])
+    }, 2000)
+  }
 
   const createPerson = (e) => {
     e.preventDefault();
@@ -26,6 +36,7 @@ const App = () => {
             setPersons(persons.map(p => p.name !== person.name ? p : res.data));
             setNewNumber('');
             setNewName('');
+            setMessage(`Updated ${person.name}.`, false);
           })
           .catch((err)=>{
             alert(`error: ${err}`)
@@ -39,6 +50,7 @@ const App = () => {
           setPersons(persons.concat(res.data));
           setNewNumber('');
           setNewName('');
+          setMessage(`Added ${person.name}.`, false);
         })
         .catch((err)=>{
           alert(`error: ${err}`)
@@ -47,14 +59,18 @@ const App = () => {
   };
 
   const deletePerson = (id) => {
-    if(window.confirm(`Delete ${persons.find(p => p.id === id).name}?`))
+    const personName = persons.find(p => p.id === id).name;
+    if(window.confirm(`Delete ${personName}?`))
     {
       phonebook.deleteObject(id)
         .then((res) => {
           setPersons(persons.filter(p => p.id !== id))
+          setMessage(`Deleted ${personName}.`, false);
         }, [])
         .catch((err)=>{
-          alert(`error: ${err}`)
+          setMessage(`Failed to remove entry of ${personName} from database. It may have been removed already.`, true);
+
+          setPersons(persons.filter(p => p.id !== id))
         })
     }
   };
@@ -74,6 +90,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification obj={errorMessage}></Notification>
       <ControlledInput input={{key: 'filter shown with', value: newFilter, callback: setNewFilter}} />
       <Form inputs={inputs} submit={createPerson} />
       <h2>Numbers</h2>
