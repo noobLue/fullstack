@@ -1,4 +1,4 @@
-import { useState, useEffect, TextInput } from 'react'
+import { useState, useEffect } from 'react'
 import restcountries from './services/restcountries'
 import restweather from './services/restweather'
 
@@ -9,7 +9,7 @@ const Weather = ({capital, weatherData}) => {
     <h2>Weather in {capital}</h2>
     <div>Temperature {Math.round(weatherData.main.temp - kelvinConversion, 2)} Celsius</div>
     {weatherData.weather.map(w => {
-      return (<img key={w.icon} src={`https://openweathermap.org/img/wn/${w.icon}@2x.png`}></img>)
+      return (<img key={w.icon} src={`https://openweathermap.org/img/wn/${w.icon}@2x.png`} alt={w.description}></img>)
     })}
     <div>Wind {weatherData.wind.speed} m/s</div>
   </div>)
@@ -36,7 +36,7 @@ const Country = ({country, weatherData}) => {
       })}
       </ul>
 
-      <img src={country.flags.png}></img>
+      <img src={country.flags.png} alt={country.flags.alt}></img>
 
       {country.capital.length > 0 && weatherData ? <Weather capital={country.capital[0]} weatherData={weatherData}></Weather> : ""}
       
@@ -45,17 +45,15 @@ const Country = ({country, weatherData}) => {
 }
 
 const Countries = ({countries, forceCountry, forceCallback, weatherData}) => {
-  console.log(countries);
-
   if(countries.length > 10)
   {
     return <div>too many countries, please refine your filter</div>
   }
-  else if (countries.length == 0)
+  else if (countries.length === 0)
   {
     return <div>no countries found with current filter</div>
   }
-  else if (countries.length == 1)
+  else if (countries.length === 1)
   {
     return (<Country country={countries[0]} weatherData={weatherData}></Country>)
   }
@@ -91,22 +89,9 @@ function App() {
 
   useEffect(() => {
     restcountries.getAll().then(res => {
-      console.log(res.data);
       setCountries(res.data);
     });
   },[])
-
-  const getCountries = (f) => {
-    let arr = [];
-    for(let i = 0; i < countries.length; i++)
-    {
-      if(countries[i].name.common.toLowerCase().includes(f.toLowerCase()))
-      {
-        arr.push(countries[i]);
-      }
-    }
-    return arr;
-  };
 
   const updateWeather = (lat, lon) => {
     restweather.getCountryWeather(lat, lon).then(res => {
@@ -115,13 +100,25 @@ function App() {
   }
 
   useEffect(() => {
+    const getCountries = (f) => {
+      let arr = [];
+      for(let i = 0; i < countries.length; i++)
+      {
+        if(countries[i].name.common.toLowerCase().includes(f.toLowerCase()))
+        {
+          arr.push(countries[i]);
+        }
+      }
+      return arr;
+    };
+
     setFilterCountries(getCountries(filter));
     setForceCountry(null);
     
-  },[filter])
+  },[filter, countries])
 
   useEffect(() => {
-    if(filterCountries.length == 1)
+    if(filterCountries.length === 1)
       updateWeather(filterCountries[0].latlng[0], filterCountries[0].latlng[1])
   },[filterCountries])
 
