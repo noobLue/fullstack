@@ -46,6 +46,7 @@ npm start
 
 
 Exercises 2.6 - 2.17 are in [/part2/phonebook/](./part2/phonebook/)
+
 Start json-server before node application
 
 ```bat
@@ -57,6 +58,8 @@ npm start
 ```
 
 Exercises 2.18 - 2.20 are in [/part2/countries/](./part2/countries/)
+
+First create a .env variable with content ```REACT_APP_WEATHER_KEY={API_KEY}```, replace {API_KEY} with openweathermap api key
 ```bat
 cd ./part2/countries/
 npm start
