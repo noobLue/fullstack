@@ -1,5 +1,7 @@
 # fullstack
 
+Note, if ```npm start``` doesn't work, try to do ```npm install``` first.
+
 ## Part0
 
 
@@ -44,7 +46,12 @@ npm start
 
 
 Exercises 2.6 - 2.17 are in [/part2/phonebook/](./part2/phonebook/)
+Start json-server before node application
+
 ```bat
+cd ./part2/phonebook/
+json-server --watch --port 3001 db.json
+
 cd ./part2/phonebook/
 npm start
 ```
