@@ -41,3 +41,16 @@ Exercises 2.1 - 2.5 are in [/part2/courseinfo/](./part2/courseinfo/)
 cd ./part2/courseinfo/
 npm start
 ```
+
+
+Exercises 2.6 - 2.17 are in [/part2/phonebook/](./part2/phonebook/)
+```bat
+cd ./part2/phonebook/
+npm start
+```
+
+Exercises 2.18 - 2.20 are in [/part2/countries/](./part2/countries/)
+```bat
+cd ./part2/countries/
+npm start
+```
