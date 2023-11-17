@@ -1,7 +1,21 @@
 import { useState, useEffect, TextInput } from 'react'
 import restcountries from './services/restcountries'
+import restweather from './services/restweather'
 
-const Country = ({country}) => {
+const kelvinConversion = 273.15
+
+const Weather = ({capital, weatherData}) => {
+  return (<div>
+    <h2>Weather in {capital}</h2>
+    <div>Temperature {Math.round(weatherData.main.temp - kelvinConversion, 2)} Celsius</div>
+    {weatherData.weather.map(w => {
+      return (<img key={w.icon} src={`https://openweathermap.org/img/wn/${w.icon}@2x.png`}></img>)
+    })}
+    <div>Wind {weatherData.wind.speed} m/s</div>
+  </div>)
+}
+
+const Country = ({country, weatherData}) => {
   return (
     <div>
       <h1>{country.name.common}</h1>
@@ -25,11 +39,13 @@ const Country = ({country}) => {
 
       <img src={country.flags.png}></img>
 
+      {country.capital.length > 0 && weatherData ? <Weather capital={country.capital[0]} weatherData={weatherData}></Weather> : ""}
+      
     </div>
   )
 }
 
-const Countries = ({countries, forceCountry, forceCallback}) => {
+const Countries = ({countries, forceCountry, forceCallback, weatherData}) => {
   console.log(countries);
 
   if(countries.length > 10)
@@ -42,7 +58,7 @@ const Countries = ({countries, forceCountry, forceCallback}) => {
   }
   else if (countries.length == 1)
   {
-    return (<Country country={countries[0]}></Country>)
+    return (<Country country={countries[0]} weatherData={weatherData}></Country>)
   }
   else 
   {
@@ -60,7 +76,7 @@ const Countries = ({countries, forceCountry, forceCallback}) => {
     </tbody>
     </table>
 
-    {forceCountry != null ? <Country country={forceCountry}></Country> : ""}
+    {forceCountry != null ? <Country country={forceCountry} weatherData={weatherData}></Country> : ""}
     
     </div>
   }
@@ -71,6 +87,8 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [filterCountries, setFilterCountries] = useState([]);
   const [forceCountry, setForceCountry] = useState(null);
+
+  const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
     restcountries.getAll().then(res => {
@@ -101,10 +119,21 @@ function App() {
     console.log(country);
   }
 
+  
+  useEffect(() => {
+    let lat = 46.92
+    let lon = 7.47
+    restweather.getCountryWeather(lat, lon).then(res => {
+      console.log("get weather")
+      console.log(res.data);
+      setWeatherData(res.data);
+    });
+  },[])
+
   return (
     <div>
       <div>find countries: <input type="text" onChange={e => setFilter(e.target.value)}></input></div>
-      <Countries countries={filterCountries} forceCountry={forceCountry} forceCallback={_setForceCountry}></Countries>
+      <Countries countries={filterCountries} forceCountry={forceCountry} forceCallback={_setForceCountry} weatherData={weatherData}></Countries>
     </div>
   );
 }
