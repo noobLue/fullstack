@@ -16,6 +16,7 @@ const Weather = ({capital, weatherData}) => {
 }
 
 const Country = ({country, weatherData}) => {
+
   return (
     <div>
       <h1>{country.name.common}</h1>
@@ -25,8 +26,6 @@ const Country = ({country, weatherData}) => {
       area {country.area}<br/>
 
       <h3>languages: </h3>
-
-
 
       <ul>
       {Object.entries(country.languages).map(d => {
@@ -109,26 +108,29 @@ function App() {
     return arr;
   };
 
+  const updateWeather = (lat, lon) => {
+    restweather.getCountryWeather(lat, lon).then(res => {
+      setWeatherData(res.data);
+    });
+  }
+
   useEffect(() => {
     setFilterCountries(getCountries(filter));
     setForceCountry(null);
+    
   },[filter])
+
+  useEffect(() => {
+    if(filterCountries.length == 1)
+      updateWeather(filterCountries[0].latlng[0], filterCountries[0].latlng[1])
+  },[filterCountries])
 
   const _setForceCountry = (country) => {
     setForceCountry(country);
-    console.log(country);
+    updateWeather(country.latlng[0], country.latlng[1]);
   }
 
-  
-  useEffect(() => {
-    let lat = 46.92
-    let lon = 7.47
-    restweather.getCountryWeather(lat, lon).then(res => {
-      console.log("get weather")
-      console.log(res.data);
-      setWeatherData(res.data);
-    });
-  },[])
+
 
   return (
     <div>
